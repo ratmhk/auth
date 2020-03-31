@@ -6,6 +6,8 @@ import com.entity.ResultMsg;
 import com.entity.ResultStatusCode;
 import com.service.MenuService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,7 @@ public class MenuController extends BaseController<Menu,String> {
      */
     @RequestMapping("/updateStatus")
     @ResponseBody
+    @RequiresRoles(value = {"onlyEdit","超级管理员"},logical = Logical.OR)
     public ResultMsg updateStatus(HttpServletRequest request, @RequestBody Map<String,Object> map){
         Map<String, Object> body = new HashMap<String, Object>();
         String menuId = (String) map.get("menuId");
