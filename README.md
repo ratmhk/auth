@@ -14,7 +14,7 @@
 3.nginx 
      要配置好前端文件位置，还有后台接口的拦截
     例如 
-
+![add image](https://github.com/ratmhk/anth/img/1585628429229.png)
  ![1585628429229](C:\Users\kkk\AppData\Roaming\Typora\typora-user-images\1585628429229.png)
 
   ![1585628463535](C:\Users\kkk\AppData\Roaming\Typora\typora-user-images\1585628463535.png)
