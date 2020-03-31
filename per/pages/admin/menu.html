@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>菜单管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	</head>
+
+	<body>
+		<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">菜单管理</a>
+        <a>
+          <cite>菜单管理</cite></a>
+      </span>
+			<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
+		</div>
+		<div class="weadmin-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 we-search " >
+
+					<div class="layui-inline">
+						<input type="text" id="search-menuName" placeholder="请输入菜单名" class="layui-input">
+					</div>
+					<div id="search-menu" class="layui-btn  "><span class="layui-icon layui-icon-search"></span>搜索</div>
+					<div id="search-reset" class="layui-btn layui-btn-primary"><span class="layui-icon layui-icon-refresh-1"></span>重置</div>
+				</form>
+			</div>
+			<div class="weadmin-block">
+				<!--<button class="layui-btn layui-btn-danger" id="deleteBatch"><i class="layui-icon"></i>批量删除</button>-->
+				<button class="layui-btn"    id="addMenu"><i class="layui-icon">&#xe608;</i>添加菜单</button>
+
+					<button id="btnExpandAll" class="layui-btn  layui-btn-danger ">
+						<i class="layui-icon">&#xe668;</i>展开全部
+					</button>
+					<button id="btnFoldAll" class="layui-btn  layui-btn-warm ">
+						<i class="layui-icon">&#xe66b;</i>折叠全部
+					</button>
+
+			</div>
+
+
+            <div>
+                <table class="layui-table" id="layui_table_id" lay-filter="dataTable"></table>
+            </div>
+
+
+
+
+			<!-- 表格操作列 行内工具栏-->
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+			</script>
+			<!-- 表格状态列 -->
+			<script type="text/html" id="demoTreeTableState1">
+				<input type="checkbox" lay-filter="ckState" value="{{d.id}}" lay-skin="switch"
+					   lay-text="正常|冻结" {{d.state==0?'checked':''}}/>
+			</script>
+
+			<table id="demoTreeTable1" lay-filter="treeTableFilter"></table>
+
+
+
+            </div>
+
+		</div>
+        <script src="/assets/js/jquery.min.js"></script>
+		<script src="/assets/js/jquery.cookie.js"></script>
+		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+		<script src="../../static/js/eleDel.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+    var webPath = "/auth";
+	var userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+	var acc = userInfo.acc;
+	var cid = userInfo.id;
+    var treeData = '' ;
+    $("#addMenu").click(function () {
+        var layContent =
+            '<form class="layui-form"style="margin-right: 10px;margin-top: 4px">' +
+
+            '      <div class="layui-form-item" >' +
+            '           <label for="roleName" class="layui-form-label">菜单名</label>' +
+            '           <div class="layui-input-block">' +
+            '                <input type="text" id="menuName-add"  class="layui-input" maxlength="16">' +
+            '           </div>' +
+            '      </div>' +
+
+            '     <div class="layui-form-item">' +
+            '         <label for="mark" class="layui-form-label">路径</label>' +
+            '         <div class="layui-input-block">' +
+            '             <input type="text" id="menuPath"  class="layui-input"  />' +
+            '         </div>' +
+            '     </div>' +
+
+            '     <div class="layui-form-item">' +
+            '         <label for="mark" class="layui-form-label">图标</label>' +
+            '         <div class="layui-input-block">' +
+           /* '             <input type="text" id="icon"  class="layui-input" value="" />' +*/
+			'		 <input type="text" id="icon" lay-filter="iconPicker" class="layui-input">'+
+            '         </div>' +
+            '     </div>' +
+
+			'     <div class="layui-form-item">' +
+			'         <label for="mark" class="layui-form-label">序号</label>' +
+			'         <div class="layui-input-block">' +
+			'             <input type="number" id="showIndex" onkeyup="value=value.replace(/^\\.|[^\\d]+/g,\'\')"  lay-verify="number" value="0" class="layui-input"  />' +
+			'         </div>' +
+			'     </div>' +
+
+			'     <div class="layui-form-item">' +
+			'         <label for="mark" class="layui-form-label">父级菜单</label>' +
+			'         <div class="layui-input-block">' +
+			'             <input  type="text" id="parent-select"  lay-filter="parent-select" class="layui-input" value="0"/>' +
+			'         </div>' +
+			'     </div>' +
+
+
+            ' </form>';
+
+        layer.open({
+            type: 1,
+			success:function(){
+				layui.use(['iconPicker','form'], function(){
+					var form = layui.form;
+					var iconPicker = layui.iconPicker;
+					iconPicker.render({
+						elem: '#icon',// 选择器，推荐使用input
+						type: 'unicode',// 数据类型：fontClass/，推荐使用fontClass
+						search: true,	// 是否开启搜索：true/false
+						click: function (data) {// 点击回调
+						}
+					});
+
+
+
+					treeSelectdemo("parent-select",0);
+					form.render(); //更新全部
+				});
+			},
+            title: "添加菜单",
+            area: ['550px', '550px'],
+            scrollbar: false,
+            content: layContent,
+            btn:["添加","取消"],
+            btn1:function () {//状态1正常0禁用
+                var menuName = $("#menuName-add").val();
+                var menuPath = $("#menuPath").val();
+                var showIndex = $("#showIndex").val();
+                var parentSelect = $("#parent-select").val();
+                var icon = $("#icon").val();
+
+				if (fooMenu){
+					layer.msg("请选择一级菜单");
+					return;
+				}
+				if (menuName == '' ){
+					layer.msg("菜单名不能为空");
+					return;
+				}
+				if (showIndex == '' ){
+					layer.msg("展示顺序不能为空");
+					return;
+				}
+				if (icon == ''){
+					layer.msg("请填写图标");
+					return;
+				}
+
+
+                var obj = {menuName:menuName,menuPath:menuPath,status:"1",showIndex:showIndex,parentId:parentSelect,icon:icon};
+
+                $.ajax({
+					headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+                    url: webPath+"/menu/insert",
+                    type: "POST",
+                    data:JSON.stringify(obj),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function(data) {
+                        if (data.errorCode == "0") {
+                            layer.closeAll();
+                            layer.msg("添加成功");
+                            setTimeout(function () {
+                                initData();
+                            },300)
+
+                        }else layer.msg("添加失败  "+JSON.stringify(data))
+
+                    },
+                    error: function(xhr, type, errorThrown) {
+                        layer.msg("失败  "+JSON.stringify(xhr.responseJSON) + "  "+errorThrown);
+                        console.info(JSON.stringify(xhr.responseJSON));
+                    }
+                })//ajax
+
+            },
+        });
+
+
+    });
+
+
+ 	$("#search-reset").click(function () {
+         $("#search-menuName").val("");
+         initData();
+    });
+
+
+	function getTreeData() {
+		$.ajax({
+			headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+			url: webPath+'/menu/getTreeMenu',
+			type: "POST",
+			data:JSON.stringify({}),
+			async:false,
+			contentType: 'application/json;charset=utf-8',
+			success: function(data) {
+				if (data.errorCode == "0") {
+				return 	data.body.list;
+				}else layer.msg("请求失败  "+JSON.stringify(data))
+
+			},
+			error: function(xhr, type, errorThrown) {
+				layer.msg("失败  "+xhr.responseJSON + "  "+errorThrown)
+			}
+		})//ajax
+
+	}
+
+    initData();
+    function initData() {
+
+		layui.use(['treeTable','form', 'table','layer','treeSelect'], function () {
+			var $ = layui.jquery;
+			var treeTable = layui.treeTable;
+			var table = layui.table;
+			var form = layui.form;
+			var layer = layui.layer;
+			var treeSelect = layui.treeSelect;
+			// 渲染表格
+
+			var insTb = treeTable.render({
+				elem: '#demoTreeTable1',
+
+				treeLinkage: true,
+				tree: {
+					iconIndex: 1,  // 折叠图标显示在第几列
+					idName: 'id',  // 自定义id字段的名称
+					isPidData: true  ,// 是否是pid形式数据
+					pidName: 'parentId',  // 自定义标识是否还有子节点的字段名称
+					arrowType: 'arrow2',
+					getIcon: function (d) {
+						if (d.parentId == 0)   return '<i class="ew-tree-icon ew-tree-icon-folder"></i>';
+						else   return '<i class="ew-tree-icon ew-tree-icon-file"></i>';
+					}
+				},
+				cols: [
+					{type: 'checkbox', fixed: 'left'},
+					{field: 'menuName', title: '菜单名',  },
+					{field: 'menuPath', title: '路径' },
+                    {field: 'icon', title: '图标',
+						templet:function (d){
+                    		if (d.icon != null)
+                    		return '<i class="layui-icon ">'+d.icon+'</i>';
+                    		return '';
+						}},
+					{field: 'showIndex', title: '展示顺序' },
+					{field: 'status', title: '状态',
+						templet:function (d) {//  状态1正常0禁用
+							var status = d.status ;
+							var  check_btn = true;
+							var  str = '';/*  lay-filter="switch"   */
+							if (status == '1') str = '<input  type="checkbox"  lay-filter="switch"  id="'+d.id+'" value="'+d.status+'" lay-skin="switch" lay-text="正常|禁用" checked  >';
+							else  str = '<input type="checkbox" id="'+d.id+'" lay-filter="switch"  value="'+d.status+'" lay-skin="switch" lay-text="正常|禁用" />' ;
+							return str;
+						}
+					},
+					 {fixed: 'right', title:'操作', toolbar: '#barDemo'}
+				],
+
+				reqData: function(data, callback) {
+					$.ajax({
+						headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+						url: webPath+"/menu/getListByMap",// getTreeMenu
+						type: "POST",
+						data:JSON.stringify({}),
+						contentType: 'application/json;charset=utf-8',
+						success: function(data) {
+							if (data.errorCode == "0"){
+								callback(data.body.list);
+								/*insTb.expandAll();*/
+							}
+							 else layer.msg("失败 "+JSON.stringify(data));
+
+						},
+						error: function(xhr, type, errorThrown) {
+							layer.msg("失败  "+JSON.stringify(xhr.responseJSON)  + "  "+JSON.stringify(errorThrown))
+						}
+					})//ajax
+
+				},
+
+			});
+
+			//展开特定个
+			$('#search-menu').click(function () {
+				var keywords = $('#search-menuName').val();
+				// insTb.expand(keywords);
+				if (keywords != '')   insTb.filterData(keywords);
+				else insTb.clearFilter();
+
+			});
+
+			// 全部展开
+			$('#btnExpandAll').click(function () {
+				insTb.expandAll();
+			});
+
+			// 全部折叠
+			$('#btnFoldAll').click(function () {
+				insTb.foldAll();
+			});
+
+
+			treeTable.on('checkbox(demoTreeTable1)', function(obj){
+				console.log(obj.checked);  // 当前是否选中状态
+				console.log(obj.data);  // 选中行的相关数据
+				console.log(obj.type);  // 如果触发的是全选，则为：all，如果触发的是单选，则为：one
+
+			});
+
+			form.on('switch(switch)', function(data){//状态1正常0禁用
+				var j = $(data.elem);
+				var newCheck = data.elem.checked;
+				var status = '0';
+				if (newCheck == true ) status = '1'; //1正常
+				var obj = {menuId:$(data.elem).attr("id"),status:status};
+				$.ajax({
+					headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+					url: webPath+"/menu/updateStatus",
+					type: "POST",
+					data:JSON.stringify(obj),
+					contentType: 'application/json;charset=utf-8',
+					success: function(data) {
+						if (data.errorCode == "0") {
+							initData();
+							layer.msg("修改成功");
+
+						}else {
+							$(data.elem).prop('checked',true); //修改switch开关
+							layer.msg("修改失败  "+JSON.stringify(data.errorMsg));
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						layer.msg("失败  "+JSON.stringify(xhr.responseJSON) );
+					}
+				})//ajax
+
+			});
+
+			//增删改
+			treeTable.on('tool(demoTreeTable1)', function(obj){
+				var checkStatus = table.checkStatus('menu');
+
+				var data = obj.data;
+
+				if(obj.event === 'add'){
+
+				}else if(obj.event === 'edit'){
+					editMenu(data);
+				}else if(obj.event === "del"){
+					var id = data.id;
+					layer.confirm('确定删除选定行的数据吗?', function(index){
+						var ch = data.children ;
+						var ids = [];
+						ids.push(data.id)
+						if (typeof ch == 'undefined') ; //没有子菜单
+						 else
+							$(ch).each(function(index,element){ids.push(element.id);});
+
+						deleteMenu(ids);
+
+					});
+
+				}
+			})
+
+		});
+
+    }
+
+
+    function deleteMenu(ids){
+			$.ajax({
+				headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+				url: webPath+'/menu/deleteBatch',
+				type: "POST",
+				data:JSON.stringify({ids:ids}),
+				contentType: 'application/json;charset=utf-8',
+				success: function(data) {
+					if (data.errorCode == "0") {
+						layer.msg("删除成功");
+						setTimeout(function () {initData();},300);
+					}else{
+						layer.msg("修改失败 "+JSON.stringify(data.errorMsg));
+						setTimeout(function () {initData();},300);
+					}
+
+				},
+				error: function(xhr, type, errorThrown) {
+					layer.msg("失败  " +JSON.stringify(data.errorMsg));
+				}
+			})//ajax
+
+	}
+
+	layui.config({
+		base: "module/"
+	}).extend({
+		treeSelect: "treeSelect/treeSelect"
+	});
+
+    var fooMenu = false ;
+	function treeSelectdemo(str,par){
+
+		layui.use(['treeSelect', 'form', 'layer'], function () {
+			var treeSelect= layui.treeSelect,
+					form = layui.form,
+					$ = layui.jquery,
+					layer = layui.layer;
+
+			treeSelect.render({
+				elem:"#"+str ,//'#parent-select',
+				data: webPath+"/menu/getTreeMenu",//data:  'data/data3.json',//treeData,
+				type: 'post',
+				headers: {},
+				search: true,
+				style: {
+					folder: {enable: true },
+					line: {enable: true }
+				},// 一些可定制的样式
+				click: function(d){// 点击回调
+					fooMenu = true ;
+					$("#"+str).val(d.current.id);
+					if (d.current.parentId!='0') {
+						layer.msg("请选择第一级菜单 当前："+d.current.title);
+						return;
+					}else fooMenu = false ;
+				},
+				success: function (d) {	// 加载完成后的回调函数
+					var treeObj = treeSelect.zTree(str);
+					if(par != 0){
+						var node = treeObj.getNodeByParam("id", par);
+						if(node != null)  	treeObj.checkNode(node, true)
+						treeSelect.checkNode(str, par,d.treeId);
+					}
+
+
+				}
+			});
+
+		});
+
+	}
+
+
+	function editMenu(elem){
+
+			var layContent = '<form class="layui-form" style="margin-right: 10px;margin-top: 4px">' +
+
+					'      <div class="layui-form-item" >' +
+					'           <label for="roleName" class="layui-form-label">菜单名</label>' +
+					'           <div class="layui-input-block">' +
+					'                <input type="text" id="menuName-upd"  class="layui-input" maxlength="16">' +
+					'           </div>' +
+					'      </div>' +
+
+					'     <div class="layui-form-item">' +
+					'         <label for="mark" class="layui-form-label">路径</label>' +
+					'         <div class="layui-input-block">' +
+					'             <input type="text" id="menuPath-upd"  class="layui-input"  />' +
+					'         </div>' +
+					'     </div>' +
+
+
+                '     <div class="layui-form-item">' +
+                '         <label for="mark" class="layui-form-label">图标</label>' +
+                '         <div class="layui-input-block">' +
+                '             <input type="text" id="icon-upd" lay-filter="icon-upd" class="layui-input" value="" />' +
+                '         </div>' +
+                '     </div>' +
+
+					'     <div class="layui-form-item">' +
+					'         <label for="mark" class="layui-form-label">序号</label>' +
+					'         <div class="layui-input-block">' +
+					'             <input type="number"  id="showIndex-upd" onkeyup="value=value.replace(/^\\.|[^\\d]+/g,\'\')"  lay-verify="number" class="layui-input"  />' +
+					'         </div>' +
+					'     </div>' +
+
+					'     <div class="layui-form-item">' +
+					'         <label for="mark" class="layui-form-label">父级菜单</label>' +
+					'         <div class="layui-input-inline">' +
+					'             <input  type="text" id="parent-select-upd"  lay-filter="parent-select-upd" class="layui-input" value=""/>' +
+
+					'         </div>' +
+					'     </div>' +
+
+					'     <div class="layui-form-item">' +
+					'         <label for="status-edit" class="layui-form-label">状态</label>' +
+					'         <div class="layui-input-block" id="status-edit-div">' +
+					'             <input type="radio" name="status-upd" id="radio-nomal" value="1" title="正常"  checked/> ' +
+					'             <input type="radio" name="status-upd"id="radio-abnomal" value="0" title="禁用"  /> ' +
+					'         </div>' +
+					'     </div>' +
+
+					' </form>';
+
+			layer.open({
+				type: 1,
+				shadeClose:true,//空白处关闭
+				title: "编辑菜单", //不显示标题
+				area: ['550px', '550px'],
+				scrollbar: false,
+				content: layContent,
+				btn:["修改","取消"],
+				success:function () {
+					layui.use(['iconPicker','form'], function(){
+						var form = layui.form;
+						var iconPicker = layui.iconPicker;
+
+						$("#icon-upd").val(elem.icon);
+						iconPicker.render({
+							elem: '#icon-upd',// 选择器，推荐使用input
+							type: 'unicode',// 数据类型：fontClass/，推荐使用fontClass
+							search: true,	// 是否开启搜索：true/false
+							click: function (data) {// 点击回调
+							}
+						});
+
+						iconPicker.checkIcon('icon-upd', elem.icon);
+						$("#showIndex-upd").val(elem.showIndex);
+						$("#menuName-upd").val(elem.menuName);
+						$("#menuPath-upd").val(elem.menuPath);
+
+						treeSelectdemo("parent-select-upd",elem.parentId);
+						$("#parent-select-upd").val(elem.parentId);
+
+						if(elem.status == '0') $("#radio-abnomal").prop("checked", true);//禁用
+						form.render(); //更新全部
+					});
+
+				},
+				btn1:function () {//状态1正常0禁用
+					var menuName = $("#menuName-upd").val();
+					var menuPath = $("#menuPath-upd").val();
+					var showIndex = $("#showIndex-upd").val();
+					var parentSelect = $("#parent-select-upd").val();
+					var icon = $("#icon-upd").val();
+					if (parentSelect == elem.id) {
+						layer.msg("父菜单不能选自己");
+						return;
+					}
+					if (fooMenu){
+						layer.msg("请选择一级菜单");
+						return;
+					}
+					if (menuName == '' ){
+						layer.msg("菜单名不能为空");
+						return;
+					}
+					if (showIndex == '' ){
+						layer.msg("展示顺序不能为空");
+						return;
+					}
+					if (icon == ''){
+						layer.msg("请填写图标");
+						return;
+					}
+
+					var obj = {id:elem.id,menuName:menuName,menuPath:menuPath,status:"1",
+                        showIndex:showIndex,parentId:parentSelect,status:$("input[name='status-upd']:checked").val(),
+                        icon:icon};
+
+					$.ajax({
+						headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+						url: webPath+"/menu/updateSelective",
+						type: "POST",
+						data:JSON.stringify(obj),
+						contentType: 'application/json;charset=utf-8',
+						success: function(data) {
+							if (data.errorCode == "0") {
+								layer.closeAll();
+								layer.msg("修改成功");
+								setTimeout(function () {
+									initData();
+								},300)
+
+							}else layer.msg("修改失败  "+JSON.stringify(data))
+
+						},
+						error: function(xhr, type, errorThrown) {
+							layer.msg("失败  "+xhr.responseJSON + "  "+errorThrown)
+						}
+					})//ajax
+
+				},
+
+
+			});
+
+
+
+
+
+		}
+
+
+    })
+
+</script>
+
+
+	</body>
+
+</html>

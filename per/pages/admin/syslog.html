@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>菜单管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	</head>
+
+	<body>
+		<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">系统管理</a>
+        <a>
+          <cite>日志管理</cite></a>
+      </span>
+			<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
+		</div>
+		<div class="weadmin-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 we-search " >
+
+					<!--<div class="layui-inline">
+						<input type="text" id="roleName" placeholder="请输入菜单名" class="layui-input">
+					</div>
+					<div id="search-role" class="layui-btn  "><span class="layui-icon layui-icon-search"></span>搜索</div>
+					<div id="search-reset" class="layui-btn layui-btn-primary"><span class="layui-icon layui-icon-refresh-1"></span>重置</div>
+				-->
+				</form>
+			</div>
+		<!--	<div class="weadmin-block">
+				<button class="layui-btn layui-btn-danger" id="deleteBatch"><i class="layui-icon"></i>批量删除</button>
+				<button class="layui-btn"    id="addRole"><i class="layui-icon">&#xe608;</i>添加菜单</button>
+			</div>-->
+
+
+            <div>
+                <table class="layui-table" id="layui_table_id" lay-filter="dataTable"></table>
+            </div>
+
+            </div>
+
+
+		</div>
+        <script src="/assets/js/jquery.min.js"></script>
+		<script src="/assets/js/jquery.cookie.js"></script>
+		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+    var webPath = "/auth";
+
+	var userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+	var acc = userInfo.acc;
+	var cid = userInfo.id;
+
+    $("#search-role").click(function () {
+        initData();
+    });
+
+ 	$("#search-reset").click(function () {
+         $("#roleName").val("");
+         initData();
+    });
+
+
+
+    initData();
+    function initData() {
+        layui.use(['form', 'table','layer'] , function () {  // 引入 table模块
+            var table = layui.table;
+            var form = layui.form;
+            var layer = layui.layer;
+            table.render({
+                id:"dataTable",//
+                elem: '#layui_table_id',//指定表格元素
+                url: webPath+'/sysLog/getListByMapPage',  //请求路径
+                contentType: 'application/json',
+                cellMinWidth: 20 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                ,skin: 'line ' //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+                ,even: true    //隔行换色
+                ,page: true  //开启分页
+                ,limits: [5,10,20]  //每页条数的选择项，默认： 。
+                ,limit: 5 //每页默认显示的数量
+                ,method:'post'  //提交方式
+				,headers:{Authorization:$.cookie("token")}
+                ,where: {
+                    /*currentPage: 1,
+                    pageSize: 5,*/
+                }
+                ,request: {//用于对分页请求的参数：page、limit重新设定名称，如：
+                    pageName: 'currentPage' //页码的参数名称，默认：page
+                    ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+                ,parseData: function(res){ //res 即为原始返回的数据
+                    return {
+                        "code": res.errorCode, //解析接口状态
+                        "count": res.body.totalRecord, //解析数据长度
+                        "data": res.body.list //解析数据列表
+                    };
+                }
+                ,cols: [[
+                    {type:'checkbox'}, //开启多选框
+                    {
+                        field: 'userId',
+                        title: '用户',
+                        sort: true   // 默认为 false,true为开启排序
+                    },
+                    {
+                        field: 'moduleName',
+                        title: '模块名',
+                    },
+
+					{
+						field: 'operate',
+						title: '操作',
+					},
+					{
+						field: 'time',
+						title: '时间',
+					},
+					{
+						field: 'className',
+						title: '类名',
+					},
+					{
+						field: 'methodName',
+						title: '方法',
+					},
+
+                   /*
+                    {
+                        field: 'id',
+                        title: '操作',   //列名
+                        templet:function (d) {//&#xe642;  &#xe63c; &#xe640;
+                            return '<button class="layui-btn" lay-event="editRole" >编辑 </button> ';
+                        }
+                    },*/
+                ]]
+                //,toolbar:".mytoolbar"
+                ,done: function(res, curr, count) {
+
+                    form.on('switch(switch)', function(data){//状态1正常0禁用
+                        var j = $(data.elem);
+                        var newCheck = data.elem.checked;
+
+                        var status = '0';
+                        if (newCheck == true ) status = '1'; //1正常
+
+                        var obj = {roleId:$(data.elem).attr("id"),status:status};
+
+                        $.ajax({
+                            url: webPath+"/role/updateStatus",
+                            type: "POST",
+                            data:JSON.stringify(obj),
+                            contentType: 'application/json;charset=utf-8',
+                            success: function(data) {
+                                if (data.errorCode == "0") {
+                                    initData();
+                                    layer.msg("修改成功");
+
+                                }else {
+                                    $(data.elem).prop('checked',true); //修改switch开关
+                                    layer.msg("修改失败");
+                                }
+                            },
+                            error: function(xhr, type, errorThrown) {
+                                layer.msg("失败  "+JSON.stringify(xhr.responseJSON));
+                            }
+                        })//ajax
+
+
+                    });
+
+
+                    table.on('tool(dataTable)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                        var data = obj.data //获得当前行数据（json格式的键值对）
+                            ,layEvent = obj.event //获得 lay-event 对应的值（编辑、删除、添加）
+                            ,editList=[]; //存放获取到的那条json数据中的value值（不放key）
+                        $.each(data,function(name,value) {//循环遍历json数据
+                            editList.push(value);//将json数据中的value放入数组中（下面的子窗口显示的时候要用到）
+                        });
+
+                        if(layEvent === 'editRole') editRole(data);
+
+
+                    });
+
+
+
+                }
+            });
+        });
+    }
+
+
+    $("#deleteBatch").click(function () {
+        layer.confirm("是否删除", {btn: ['确定', '取消'], title: "是否删除"}, function (){
+                deleteBatch();
+            })
+
+    });
+
+    function deleteBatch() {
+
+            layui.use([ 'table','layer'] , function (){
+                var table = layui.table;
+                var layer = layui.layer;
+
+                var checkStatus = table.checkStatus('dataTable');
+                var data = checkStatus.data;
+                if (data.length < 1) {
+                    layer.msg("请选择要操作的数据");
+                    return;
+                }
+                var ids = [];
+                $.each(data,function (index,ele) {
+                    ids.push(ele.id);
+                })
+                var obj = {ids:ids }; 
+
+                console.info(obj);
+
+                $.ajax({
+					headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+                    url: webPath+"/role/deleteBatch",
+                    type: "POST",
+                    data:JSON.stringify(obj),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function(data) {
+                        if (data.errorCode == "0") {
+                            layer.msg("修改成功");
+                            setTimeout(function () {initData();},300);
+                        }else layer.msg("修改失败 "+JSON.stringify(data.errorMsg));
+
+                    },
+                    error: function(xhr, type, errorThrown) {
+                        layer.msg("失败  "+JSON.stringify(xhr.responseJSON));
+                    }
+                })//ajax
+
+            })
+
+        }
+
+
+    })
+
+</script>
+
+
+	</body>
+
+</html>

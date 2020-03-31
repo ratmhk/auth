@@ -1,0 +1,797 @@
+<!--此页面已废弃，仅供参考-->
+<!DOCTYPE html>
+<html>
+<!--frame传值后再添加新数据的实现方法尝试页面备份-->
+	<head>
+		<meta charset="UTF-8">
+		<title>账号列表 </title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<!--<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>-->
+		<script src="/assets/js/jquery.min.js"></script>
+		<script src="/assets/js/jquery.cookie.js"></script>
+		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../static/js/admin.js"></script>
+		<script src="../../lib/layui/lay/modules/table.js"></script>
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	</head>
+
+	<body>
+		<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">账号管理</a>
+        <a>
+          <cite>账号列表 </cite></a>
+      </span>
+			<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
+		</div>
+		<div class="weadmin-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 we-search">
+					账号搜索：
+
+					<div class="layui-inline">
+						<input type="text" id="nickname-input"  placeholder="请输入昵称名"  class="layui-input">
+					</div>
+					<div id="search-name" class="layui-btn  "><span class="layui-icon layui-icon-search"></span>搜索</div>
+					<div id="search-reset" class="layui-btn layui-btn-primary"><span class="layui-icon layui-icon-refresh-1"></span>重置</div>
+				</form>
+			</div>
+			<div class="weadmin-block">
+
+				<button class="layui-btn" id="add-acc"><i class="layui-icon"></i>添加</button>
+
+				<div  class="layui-btn layui-btn-primary layui-btn-primary" id="fronzed-acc"><span class="layui-icon layui-icon-password"></span>冻结</div>
+
+			</div>
+
+
+			<div>
+				<table class="layui-table" id="layui_table_id" lay-filter="dataTable"></table>
+
+			</div>
+
+
+
+		</div>
+
+		<form class="layui-form" id="modalForm" style="display: none;">
+			<div class="layui-form-item">
+				<label for="L_username" class="layui-form-label">
+		                <span class="we-red">*</span>登录名
+		            </label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_username" name="username" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="L_sex" class="layui-form-label">性别</label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_sex" name="sex" class="layui-input">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label for="L_email" class="layui-form-label">
+		             <span class="we-red">*</span>手机
+		        </label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_phone" name="phone" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="L_email" class="layui-form-label">
+		                <span class="we-red">*</span>邮箱
+		            </label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_email" name="email" lass="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="L_pass" class="layui-form-label">
+                  <span class="we-red">*</span>密码
+              </label>
+				<div class="layui-input-inline">
+					<input type="password" id="L_pass" name="pass" class="layui-input">
+				</div>
+			</div>
+		</form>
+
+	<script>
+		var webPath = '/auth';
+
+		layui.use('laydate', function() {
+				var laydate = layui.laydate;
+
+				laydate.render({//执行一个laydate实例
+					elem: '#start' //指定元素
+				});
+
+				laydate.render({//执行一个laydate实例
+					elem: '#end' //指定元素
+				});
+			});
+
+			//图片放大
+		function openImg(e) {
+				var url = $(e).attr("src");
+				var imgHtml2 = "<div style='width:98%;\
+                    height:440px;margin:10px auto;\
+                    background-size:contain;\
+                    background-repeat:no-repeat;\
+                    background-position:center center;\
+                    background-image:url(" + url + ")' id='myDIV'></div>";
+
+				layer.open({
+					type: 1,
+					shade: [0],
+					shadeClose:true,
+					title: false, //不显示标题
+					area: ['50%', '520px'],
+					scrollbar: false,
+					yes: function(index, layero) {
+					},
+					content: imgHtml2, //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+					cancel: function() {}
+				});
+
+
+			}
+
+		$(function() {// 初始化内容
+			var roleList = [];
+
+			var userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+			var acc = userInfo.acc;
+			var cid = userInfo.id;
+
+			$("#search-name").click(function () {
+					initData();
+				});
+
+			initData();
+				
+			function initData() {
+
+				layui.use('table', function () {  // 引入 table模块
+					var table = layui.table;
+					var form = layui.form;
+					table.render({
+						id:"dataTable",//
+						elem: '#layui_table_id',//指定表格元素
+						url: webPath+'/adminAcc/getAccByMap',  //请求路径
+						contentType: 'application/json',
+						cellMinWidth: 20 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+						,skin: 'line ' //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+						,even: true    //隔行换色
+						,page: true  //开启分页
+						,limits: [5,10,20]  //每页条数的选择项，默认： 。
+						,limit: 5 //每页默认显示的数量
+						,method:'post'  //提交方式
+						,headers:{Authorization:$.cookie("token") }
+						,where: {
+							/*currentPage: 1,
+                            pageSize: 5,*/
+							nickname:$("#nickname-input").val(),
+						}
+						,request: {//用于对分页请求的参数：page、limit重新设定名称，如：
+							pageName: 'currentPage' //页码的参数名称，默认：page
+							,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+
+						}
+						,parseData: function(res){ //res 即为原始返回的数据
+							return {
+								"code": res.errorCode, //解析接口状态
+								"count": res.body.totalRecord, //解析数据长度
+								"data": res.body.list //解析数据列表
+							};
+						}
+						,cols: [[
+							{type:'checkbox'}, //开启多选框
+							{
+								field: 'acc', //json对应的key
+								title: '账号',   //列名
+								sort: true   // 默认为 false,true为开启排序
+							},
+							{
+								field: 'nickname', //json对应的key
+								title: '昵称',   //列名
+
+							},
+							{
+								field: 'sex', //json对应的key
+								title: '性别',   //列名
+								width:60
+							},
+							{
+								field: 'phone', //json对应的key
+								title: '手机',   //列名
+								width:130
+							},
+							{
+								field: 'img',
+								title: '图片',
+								unresize: true,
+								style:'height:20px;',
+								templet:function (d) {
+									return  '<div class="layer-photos-demo"   style="cursor:pointer;">   ' +
+											'<img class="layer-img"  onclick="openImg(this)"  src="/big1/file/showImage?fileName='+d.img+'" alt="图片名"></div>';
+								}
+							},
+							{
+								field: 'status',
+								title: '状态',
+								templet:function (d) {//  状态1正常0冻结
+									var status = d.status ;
+									var  check_btn = true;
+									var  str = '';
+									if (status == '1') str = '<input  type="checkbox"  lay-filter="switch"  id="'+d.id+'" value="'+d.status+'" lay-skin="switch" lay-text="正常|冻结" checked  >';
+									else  str = '<input type="checkbox" id="'+d.id+'" lay-filter="switch"  value="'+d.status+'" lay-skin="switch" lay-text="正常|冻结" />' ;
+									return str;
+								}
+							},
+							{
+								field: 'id',
+								title: '操作',   //列名
+								templet:function (d) {
+									return '<button class="layui-btn layui-btn-sm" lay-event="editUserRole" >分配角色 </button> '+
+									 '<button class="layui-btn layui-btn-sm" lay-event="edit" >编辑 </button> ';
+								}
+							},
+
+						]]
+						,done: function(res, curr, count) {
+							//console.info(res);
+							table.on('tool(dataTable)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+								var data = obj.data //获得当前行数据（json格式的键值对）
+										,layEvent = obj.event //获得 lay-event 对应的值（编辑、删除、添加）
+										,editList=[]; //存放获取到的那条json数据中的value值（不放key）
+								$.each(data,function(name,value) {//循环遍历json数据
+									editList.push(value);//将json数据中的value放入数组中（下面的子窗口显示的时候要用到）
+								});
+
+								if(layEvent === 'editUserRole') editUserRole(data);
+								else if(layEvent == 'edit') edit(data);
+							});
+
+
+							form.on('switch(switch)', function(data){//状态1正常0禁用
+								var j = $(data.elem);
+								var newCheck = data.elem.checked;
+
+								var status = '0';
+								if (newCheck == true ) status = '1'; //1正常
+								var ids = [];
+								ids.push($(data.elem).attr("id"));
+								var obj = {ids:ids,status:status};
+
+								changeAccStatus(ids,status);
+
+
+							});
+
+						}
+					});
+				});
+			}
+
+
+			function deleteBatch() {
+
+				layui.use([ 'table','layer'] , function (){
+					var table = layui.table;
+					var layer = layui.layer;
+
+					var checkStatus = table.checkStatus('dataTable');
+					var data = checkStatus.data;
+					if (data.length < 1) {
+						layer.msg("请选择要操作的数据");
+						return;
+					}
+					var ids = [];
+					$.each(data,function (index,ele) {
+						ids.push(ele.id);
+					})
+					var obj = {ids:ids };
+
+					$.ajax({headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+						url: webPath+"/user/deleteBatch",
+						type: "POST",
+						data:JSON.stringify(obj),
+						contentType: 'application/json;charset=utf-8',
+						success: function(data) {
+							if (data.errorCode == "0") {
+								layer.msg("删除成功");
+								setTimeout(function () {initData();},300);
+							}else layer.msg("删除失败 "+JSON.stringify(data))
+
+						},
+						error: function(xhr, type, errorThrown) {
+							layer.msg("失败  "+JSON.stringify(xhr.responseJSON))//  + "  "+JSON.stringify(errorThrown)
+						}
+					})//ajax
+
+				})
+
+			}
+
+
+			function editUserRole(elem){
+
+				var layContent = '<form class="layui-form"  style="margin-top: 10px;margin-left: 4px">' +
+
+						'     <div class="layui-form-item">' +
+						'         <label for="mark" class="layui-form-label">分配权限</label>' +
+						'         <div class="layui-input-block" id="user-role-upd">' +
+						'         </div>' +
+						'     </div>' +
+						'</form>';
+
+				layer.open({
+					type: 1,
+					shadeClose:true,//空白处关闭
+					title: "分配角色", //不显示标题
+					area: ['420px', '360px'],
+					scrollbar: false,
+					content: layContent,
+					cancel: function() {},
+					btn:["修改","取消"],
+					success:function () {
+						layui.use('form', function(){
+							var form = layui.form;
+							createRoleCheckbox();
+							initUserRole(elem.id);
+							//initRoleList(elem.roles);
+
+							form.render(); //更新全部
+						});
+
+					},
+					btn1:function () {//状态1正常0禁用
+						var roleIds = [];
+						var roles = $("input:checkbox[name='user_role2']:checked");
+						if(roles.length >0){
+							$.each(roles,function (index,ele) {
+								roleIds.push(ele.id);
+							})
+
+							var obj = {userId:elem.id,roleIds:roleIds};
+
+							$.ajax({
+								headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+								url: webPath+"/role/updateUserRole",
+								type: "POST",
+								data:JSON.stringify(obj),
+								contentType: 'application/json;charset=utf-8',
+								success: function(data) {
+									if (data.errorCode == "0") {
+										layer.closeAll();
+										layer.msg("修改成功");
+										setTimeout(function () {
+											initData();
+										},300)
+
+									}else layer.msg("修改失败  "+JSON.stringify(data))
+
+								},
+								error: function(xhr, type, errorThrown) {
+									layer.msg("失败  "+xhr.responseJSON)// + "  "+errorThrown
+								}
+							})//ajax
+						}
+
+					},
+
+				});
+
+			}
+
+
+			//生成checkbox
+			function createRoleCheckbox( ){
+				$("#user-role-upd").empty();
+				var role_permission_chekcBox = '';
+				for (var i = 0;i<roleList.length; i++)
+					role_permission_chekcBox += '<input type="checkbox" name="user_role2" ' +
+							'id="'+roleList[i].id+'" title="'+roleList[i].roleName+'" lay-skin="primary" >';
+				$("#user-role-upd").append(role_permission_chekcBox);
+
+			}
+
+			function initUserRole(userId){
+
+				var obj = {userId:userId };
+
+				$.ajax({
+					headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+					url: webPath+"/role/getUserRole",
+					type: "POST",
+					async:false,
+					data:JSON.stringify(obj),
+					contentType: 'application/json;charset=utf-8',
+					success: function(data) {
+						if (data.errorCode == "0") {
+
+							$.each(data.body.list,function (index,ele) {
+								var oldRoleId = "#"+ele.roleId;
+
+								$( "#user-role-upd  "+oldRoleId) .prop("checked",true);
+							});
+
+						}else layer.msg("获取角色信息失败  "+JSON.stringify(data))
+
+					},
+					error: function(xhr, type, errorThrown) {
+						layer.msg("获取角色信息失败  "+xhr.responseJSON )//+ "  "+errorThrown
+					}
+				})//ajax
+
+
+			}
+
+
+			$("#fronzed-acc").click(function () {
+				layui.use([ 'table','layer'] , function (){
+					var table = layui.table;
+					var layer = layui.layer;
+
+					var checkStatus = table.checkStatus('dataTable');
+					var data = checkStatus.data;
+					if (data.length < 1) {
+						layer.msg("请选择要操作的数据");
+						return;
+					}
+					var ids = [];
+					$.each(data,function (index,ele) {
+						ids.push(ele.id);
+					});
+
+					changeAccStatus(ids,'0');
+				})
+
+			});
+
+
+			//冻结 恢复账号
+			function changeAccStatus(ids,status){//状态1正常 0冻结
+				layui.use(['layer'] , function (){
+
+					var layer = layui.layer;
+
+					var obj = {ids:ids,status:status};//状态1正常 0冻结
+
+					$.ajax({
+						headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+						url: webPath+"/adminAcc/changeAccStatus",
+						type: "POST",
+						data:JSON.stringify(obj),//请求数据
+						contentType: 'application/json;charset=utf-8',
+						success: function(data) {
+							if (data.errorCode == "0") {
+								layer.msg("操作成功");
+								setTimeout(function () {initData();},300);
+							}else {
+								initData();
+								setTimeout(layer.msg("操作失败 --  "+JSON.stringify(data.errorMsg)),500);
+							}
+
+						},
+						error: function(xhr, type, errorThrown) {
+							layer.msg("失败  "+JSON.stringify(xhr.responseJSON) )// + "  "+JSON.stringify(errorThrown)
+						}
+					})//ajax
+
+				})
+			}
+
+
+			initRoleList();
+			function initRoleList() {
+				var obj = {status:'1'};//roleName:roleName,mark:mark,status:"1"
+				$.ajax({
+					headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+					url: webPath+"/role/getListByMap",
+					type: "POST",
+					async:false,
+					data:JSON.stringify(obj),
+					contentType: 'application/json;charset=utf-8',
+					success: function(data) {
+						if (data.errorCode == "0") {
+
+							var roles = data.body.list;
+							roleList = roles;
+
+						}else layer.msg("获取角色列表失败  "+JSON.stringify(data));
+
+					},
+					error: function(xhr, type, errorThrown) {
+						layer.msg("失败  "+xhr.responseJSON)// + "  "+errorThrown
+					}
+				})//ajax
+
+			}
+
+
+			$("#add-acc").click(function () {
+				openToAdd();
+			});
+
+
+			function openToAdd() {
+				var layContent = '<div> <div class="layui-form" action="" >' +
+						' <div class="layui-form-item">' +
+						' <label class="layui-form-label" id="adminAdd-acc">账号</label>' +
+						' <div class="layui-input-inline">' +
+						'<input type="text" id="acc" name="acc" lay-verify="required" lay-reqtext="账号不能为空"   class="layui-input">' +
+
+						'</div><div class="layui-form-mid layui-word-aux"  id="acc-exists"></div> ' +
+						'<div class="layui-input-inline">' +
+						'<span class="layui-form-label" style="color: red;" id="userCanAdd" > </span>' +
+						'</div>' +
+						'</div>' +
+
+						'<div class="layui-form-item">' +
+						'<label class="layui-form-label">密码</label>' +
+						'<div class="layui-input-inline">' +
+						'<input type="password" id="pwd" name="password" lay-verify="required"  lay-reqtext="密码不能为空" class="layui-input">' +
+						'</div>' +
+						'</div>' +
+						'<div class="layui-form-item">' +
+						'<label class="layui-form-label">确认密码</label>' +
+						'<div class="layui-input-inline">' +
+						'<input type="password" id="confirmpwd" lay-verify="required"  lay-reqtext="密码不能为空" class="layui-input">' +
+						'</div>' +
+						'</div> <div class="layui-form-mid layui-word-aux"  id="pwd-con"></div>' +
+
+						'<div class="layui-form-item">' +
+						'<label class="layui-form-label"> 昵称</label>' +
+						'<div class="layui-input-inline">' +
+						'<input type="text" id="nickname"name="nickname" lay-verify="required" lay-reqtext="昵称不能为空"   class="layui-input">' +
+						'</div>' +
+						'</div>' +
+
+						/*'<div class="layui-form-item">' +
+						'<label class="layui-form-label"> 选择角色</label>' +
+						'<div class="layui-input-block" id="user-role-div">' +
+						'</div>' +
+						'</div>' +*/
+
+
+						'<div class="layui-form-item">' +
+						'<div class="layui-input-block"> ' +
+						'<button type="button" class="layui-btn"  id="regist-submit">立即提交</button>' +
+						'<button type="reset" class="layui-btn layui-btn-primary">重置</button>' +
+						'</div>' +
+						'</div>' +
+
+						'</div>' +
+						'</form></div>';
+
+				layer.open({
+					type: 1,
+					title: "添加", //不显示标题
+					area: ['520px', '480px'],
+					shadeClose:true,
+					scrollbar: false,
+					content: layContent,
+					cancel: function() {},
+					success:function () {
+						layui.use('form', function(){
+							var form = layui.form;
+				/*
+							var user_role_chekcBox = '';
+							for (var i = 0;i<roleList.length; i++)
+								user_role_chekcBox += '<input type="checkbox" name="accAdd_user_role" id="'
+										+roleList[i].id+'" title="'+roleList[i].roleName+'" lay-skin="primary" >';
+
+							$("#user-role-div").append(user_role_chekcBox);
+				*/
+
+							$("#regist-submit").click(function () {registSubmit();})
+							$("#acc").blur(function (){checkUserAcc();});
+
+							form.render(); //更新全部
+						});
+
+					},
+					btn1:function () {//状态1正常0禁用
+					},
+				});
+
+
+			}
+
+			function edit(elem) {
+					var layContent =
+							'<form class="layui-form" action="" >' +
+							' <div class="layui-form-item">' +
+							' <label class="layui-form-label" id="adminAdd-acc">账号</label>' +
+							' <div class="layui-input-inline">' +
+							'<input type="text" id="acc-upd" name="acc"  disabled="" class="layui-input layui-disabled"  ></div></div>' +
+
+							'<div class="layui-form-item">' +
+							'<label class="layui-form-label"> 昵称</label>' +
+							'<div class="layui-input-inline">' +
+							'<input type="text" id="nickname-upd"name="nickname" lay-verify="required" lay-reqtext="昵称不能为空" maxlength="16"  class="layui-input">' +
+							'</div>' +
+							'</div>' +
+
+							'<div class="layui-form-item">' +
+							'<label class="layui-form-label"> 手机</label>' +
+							'<div class="layui-input-inline">' +
+							'<input type="text" id="phone-upd"name="phone" lay-verify="required" lay-reqtext="手机不能为空" maxlength="11"  class="layui-input">' +
+							'</div>' +
+							'</div>' +
+
+
+							'     <div class="layui-form-item">' +
+							'         <label for="status-edit" class="layui-form-label">性别</label>' +
+							'         <div class="layui-input-block" id="status-edit-div">' +
+							'             <input type="radio" name="sex-edit" id="radio-nomal" value="男" title="男"  checked/> ' +
+							'             <input type="radio" name="sex-edit"id="radio-abnomal" value="女" title="女"  /> ' +
+							'         </div>' +
+							'     </div>' +
+
+
+							'</form> ';
+
+					layer.open({
+						type: 1,
+						title: "编辑", //不显示标题
+						area: ['420px', '380px'],
+						scrollbar: false,
+						content: layContent,
+						cancel: function() {},
+						btn:["确定","取消"],
+						success:function () {
+							layui.use('form', function(){
+								var form = layui.form;
+								$("#nickname-upd").val(elem.nickname);
+								if (elem.sex == '女') $("#radio-abnomal").prop("checked", true);
+								$("#acc-upd").val(elem.acc);
+								$("#phone-upd").val(elem.phone);
+
+								form.render(); //更新全部
+							});
+
+						},
+						btn1:function () {
+							var nickname = $("#nickname-upd").val();
+							var phone = $("#phone-upd").val();
+							var sex = $("input[name='sex-edit']:checked").val();
+							var obj = {id:elem.id,nickname:nickname,phone:phone,sex:sex};
+							$.ajax({
+								headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+								url: webPath+"/user/updateSelective",
+								type: "POST",
+								dataType: "json",
+								contentType: 'application/json;charset=utf-8',
+								data: JSON.stringify(obj),
+								success: function(data) {
+
+									if (data.errorCode == "0") {
+										layer.closeAll();
+										layer.msg("修改成功" );
+										initData();
+									}else layer.msg("修改失败 "+JSON.stringify(data ))
+									return false;
+								},
+								error: function(xhr, type, errorThrown) {
+									layer.msg("失败  "+xhr.responseJSON );
+								}
+							})//ajax
+
+						},
+					});
+
+
+				}
+
+			
+			 var accCanRegist = false;
+			 function registSubmit() {//0游客账号 1自己注册 2校级账号分发 3管理员分发
+
+			 	if (accCanRegist == false){
+			 		layer.msg("账号存在或者账号为空");
+			 		return;
+				}
+
+				var roleIds = [];
+
+
+				var roles = $("input:checkbox[name='accAdd_user_role']:checked");
+				 /*if(roles.length >0){
+               /*	$.each(roles,function (index,ele) {
+                         roleIds.push(ele.id);
+                     });*/
+
+					var pwd =  $("#pwd" ).val();
+					var confirmpwd = $('#confirmpwd').val();
+					var acc =  $('#acc').val();
+					var nickname =  $('#nickname').val();
+					if (pwd != confirmpwd) {
+						layer.msg("两次密码不一致");
+						return;
+					}
+
+					var askdata = {
+						acc:acc,
+						password:pwd,
+						nickname:nickname,
+						accType:'3',//0游客账号 1自己注册 2校级账号分发 3管理员分发
+						status:'1'
+					}
+					var jsondata =  JSON.stringify(askdata);
+
+					$.ajax({
+						headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+						url: webPath+"/user/regist",
+						type: "POST",
+						dataType: "json",
+						contentType: 'application/json;charset=utf-8',
+						data: jsondata,
+						success: function(data) {
+
+							if (data.errorCode == "0") {
+								layer.closeAll();
+								layer.msg("注册成功" );
+								initData();
+							}else layer.msg("注册失败 "+JSON.stringify(data.errorMsg ));
+							return false;
+						},
+						error: function(xhr, type, errorThrown) {
+							alert("失败  "+xhr.responseJSON );//+ "  "+errorThrown
+						}
+					})//ajax
+
+
+
+			}
+
+			
+			function checkUserAcc() {
+			 	accCanRegist = false ;
+				$.ajax({
+					headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+					data : JSON.stringify({acc: $('#acc').val() }),
+					type:'post',
+					async:false,
+					contentType : 'application/json; charset=utf-8',
+					dataType : 'json', //返回值的类型，不是必须的，且依据返回值类型而定。
+					url:webPath+'/user/checkUserAcc',
+					success:function(data){
+						console.info(data);
+						if (data.errorCode == "0") {
+							accCanRegist =  data.body.canAddUser ;
+							if (accCanRegist == false){
+								$("#acc-exists").text('账号已经存在');
+							}
+						}else if(data.errorCode == 7003){
+							layer.closeAll();
+							layer.msg("你无操作权限");
+						}else layer.msg("失败 "+JSON.stringify(data));
+					},
+					error:function(data){
+						console.info('网络出错 '+data);
+					}
+				});//ajax
+
+			}
+
+
+			});
+
+		</script>
+	</body>
+
+</html>

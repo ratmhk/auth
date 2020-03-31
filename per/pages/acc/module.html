@@ -1,0 +1,489 @@
+<!--此页面已废弃，仅供参考-->
+<!DOCTYPE html>
+<html>
+<!--frame传值后再添加新数据的实现方法尝试页面备份-->
+	<head>
+		<meta charset="UTF-8">
+		<title>资源模块</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<!--<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>-->
+		<script src="/assets/js/jquery.min.js"></script><!--?v=2.1.4   -->
+		<script src="/assets/js/jquery.cookie.js"></script>
+		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../static/js/admin.js"></script>
+		<script src="../../lib/layui/lay/modules/table.js"></script>
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	  <script src="/assets/js/jquery.cookie.js"></script>
+    <![endif]-->
+	</head>
+
+	<body>
+		<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">系统管理</a>
+        <a>
+          <cite>资源模块 </cite></a>
+      </span>
+			<a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
+		</div>
+		<div class="weadmin-body">
+			<div class="layui-row">
+				<form class="layui-form layui-col-md12 we-search">
+					模块搜索：
+					<div class="layui-inline">
+						<input type="text" id="name-input"  placeholder="请输入模块名"  class="layui-input">
+					</div>
+					<div id="search-name" class="layui-btn  "><span class="layui-icon layui-icon-search"></span>搜索</div>
+					<div id="search-reset" class="layui-btn layui-btn-primary"><span class="layui-icon layui-icon-refresh-1"></span>重置</div>
+				</form>
+			</div>
+			<div class="weadmin-block">
+				<button class="layui-btn layui-btn-danger" id="deleteBatch"><i class="layui-icon"></i>批量删除</button>
+				<button class="layui-btn" id="add-acc"><i class="layui-icon"></i>添加</button>
+
+			</div>
+
+			<div>
+				<table class="layui-table" id="layui_table_id" lay-filter="dataTable"></table>
+			</div>
+
+
+
+		</div>
+		<!--列表页增加form表单，接收add页面传过来的值，模拟后台提交与接收-->
+		<form class="layui-form" id="modalForm" style="display: none;">
+			<div class="layui-form-item">
+				<label for="L_username" class="layui-form-label">
+		                <span class="we-red">*</span>登录名
+		            </label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_username" name="username" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="L_sex" class="layui-form-label">性别</label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_sex" name="sex" class="layui-input">
+				</div>
+			</div>
+
+			<div class="layui-form-item">
+				<label for="L_email" class="layui-form-label">
+		             <span class="we-red">*</span>手机
+		        </label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_phone" name="phone" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="L_email" class="layui-form-label">
+		                <span class="we-red">*</span>邮箱
+		            </label>
+				<div class="layui-input-inline">
+					<input type="text" id="L_email" name="email" lass="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="L_pass" class="layui-form-label">
+                  <span class="we-red">*</span>密码
+              </label>
+				<div class="layui-input-inline">
+					<input type="password" id="L_pass" name="pass" class="layui-input">
+				</div>
+			</div>
+		</form>
+
+		<!--/列表页增加form表单，接收add页面传过来的值，模拟后台提交与接收-->
+	<script>
+			var webPath = "/auth";
+			var roleList = [];
+
+			layui.use('laydate', function() {
+				var laydate = layui.laydate;
+
+				laydate.render({//执行一个laydate实例
+					elem: '#start' //指定元素
+				});
+
+				laydate.render({//执行一个laydate实例
+					elem: '#end' //指定元素
+				});
+			});
+
+		$(function() {// 初始化内容
+			var userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+			var acc = userInfo.acc;
+			var cid = userInfo.id;
+
+			$("#search-name").click(function () {
+				initData();
+			});
+			$("#search-reset").click(function () {
+				$("#name-input").val("");
+				initData();
+			});
+
+
+
+			initData();
+				
+			function initData() {
+				layui.use('table', function () {  // 引入 table模块
+					var table = layui.table;
+					var form = layui.form;
+					table.render({
+						id:"dataTable",//
+						elem: '#layui_table_id',//指定表格元素
+						url: webPath+'/module/getListByMap',  //请求路径
+						contentType: 'application/json',
+						cellMinWidth: 20 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+						,skin: 'line ' //表格风格 line （行边框风格）row （列边框风格）nob （无边框风格）
+						,even: true    //隔行换色
+						,page: true  //开启分页
+						,limits: [5,10,20]  //每页条数的选择项，默认： 。
+						,limit: 5 //每页默认显示的数量
+						,method:'post'  //提交方式
+						,headers:{Authorization:$.cookie("token") }
+						,where: {
+							/*currentPage: 1,
+                            pageSize: 5,*/
+							module:$("#name-input").val(),
+						}
+						,request: {//用于对分页请求的参数：page、limit重新设定名称，如：
+							pageName: 'currentPage' //页码的参数名称，默认：page
+							,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+						}
+						,parseData: function(res){ //res 即为原始返回的数据
+							return {
+								"code": res.errorCode, //解析接口状态
+								"count": res.body.totalRecord, //解析数据长度
+								"data": res.body.list //解析数据列表
+							};
+						}
+						,cols: [[
+							{type:'checkbox'}, //开启多选框
+							{
+								field: 'module', //json对应的key
+								title: '模块',   //列名
+								sort: true   // 默认为 false,true为开启排序
+							},
+							{
+								field: 'path', //json对应的key
+								title: '路径',   //列名
+
+							},
+							{
+								field: 'id',
+								title: '操作',   //列名
+								templet:function (d) {
+									return '<button class="layui-btn" lay-event="editUserRole" >编辑 </button> ';
+								}
+							},
+
+						]]
+						,done: function(res, curr, count) {
+							//console.info(res);
+							table.on('tool(dataTable)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+								var data = obj.data //获得当前行数据（json格式的键值对）
+										,layEvent = obj.event //获得 lay-event 对应的值（编辑、删除、添加）
+										,editList=[]; //存放获取到的那条json数据中的value值（不放key）
+								$.each(data,function(name,value) {//循环遍历json数据
+									editList.push(value);//将json数据中的value放入数组中（下面的子窗口显示的时候要用到）
+								});
+
+								if(layEvent === 'editUserRole') edit(data);
+
+							});
+
+						}
+					});
+				});
+			}
+
+
+			$("#deleteBatch").click(function () {
+				deleteBatch();
+			});
+			function deleteBatch() {
+				layui.use([ 'table','layer'] , function (){
+					var table = layui.table;
+					var layer = layui.layer;
+
+					var checkStatus = table.checkStatus('dataTable');
+					var data = checkStatus.data;
+					if (data.length < 1) {
+						layer.msg("请选择要操作的数据");
+						return;
+					}
+					var ids = [];
+					$.each(data,function (index,ele) {
+						ids.push(ele.id);
+					})
+					var obj = {ids:ids };
+
+					$.ajax({
+						headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+						url: webPath+"/module/deleteBatch",
+						type: "POST",
+						data:JSON.stringify(obj),
+						contentType: 'application/json;charset=utf-8',
+						success: function(data) {
+							if (data.errorCode == "0") {
+								layer.msg("删除成功");
+								setTimeout(function () {initData();},300);
+							}else layer.msg("删除失败 "+JSON.stringify(data.errorMsg));
+
+						},
+						error: function(xhr, type, errorThrown) {
+							layer.msg("失败  "+JSON.stringify(xhr.responseJSON)  + "  "+JSON.stringify(errorThrown))
+						}
+					})//ajax
+
+				})
+
+			}
+
+
+			function editUserRole(elem){
+
+				var layContent = '<form class="layui-form" id="user-role-form" style="margin-top: 10px;margin-left: 4px"></form>';
+
+				layer.open({
+					type: 1,
+					shadeClose:true,//空白处关闭
+					title: "分配角色", //不显示标题
+					area: ['420px', '480px'],
+					scrollbar: false,
+					content: layContent,
+					cancel: function() {},
+					btn:["修改","取消"],
+					success:function () {
+						layui.use('form', function(){
+							var form = layui.form;
+							initRoleList(elem.roles);
+							form.render(); //更新全部
+						});
+
+					},
+					btn1:function () {//状态1正常0禁用
+						var roleIds = [];
+
+						var arr = new Array();
+						var roles = $("input:checkbox[name='user_role']:checked");
+						if(roles.length >0){
+							$.each(roles,function (index,ele) {
+								roleIds.push(ele.id);
+							})
+							console.info(roleIds);
+
+							var obj = {userId:elem.id,roleIds:roleIds};
+
+							$.ajax({
+								headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+								url: webPath+"/role/updateUserRole",
+								type: "POST",
+								data:JSON.stringify(obj),
+								contentType: 'application/json;charset=utf-8',
+								success: function(data) {
+									if (data.errorCode == "0") {
+										layer.closeAll();
+										layer.msg("修改成功");
+										setTimeout(function () {
+											initData();
+										},300)
+
+									}else layer.msg("修改失败  "+JSON.stringify(data.errorMsg) );
+
+								},
+								error: function(xhr, type, errorThrown) {
+									layer.msg("失败  "+xhr.responseJSON + "  "+errorThrown)
+								}
+							})//ajax
+						}
+
+					},
+
+				});
+
+			}
+
+			$("#add-acc").click(function () {
+				openToAdd();
+			});
+
+
+			function openToAdd() {
+				var layContent = '<form class="layui-form"style="margin: 10px"> ' +
+
+						'<div class="layui-form-item">' +
+						'<label class="layui-form-label"  >模块名</label>' +
+						'<div class="layui-input-block">' +
+						'<input type="text" id="module" name="module" lay-verify="required" lay-reqtext="模块名不能为空"   class="layui-input">' +
+						'</div></div>' +
+
+						'<div class="layui-form-item" style="margin-top: 10px">' +
+						'<label class="layui-form-label"> 路径</label>' +
+						'<div class="layui-input-block">' +
+						'<input type="text" id="path"name="path" lay-verify="required" lay-reqtext="路径不能为空"   class="layui-input">' +
+						'</div>' +
+						'</div>' +
+
+						'</form> ';
+
+				layer.open({
+					type: 1,
+					title: "增加配置", //不显示标题
+					area: ['380px', '320px'],
+					scrollbar: false,
+					content: layContent,
+					shadeClose:true,
+					cancel: function() {},
+					success:function () {
+						layui.use('form', function(){
+							var form = layui.form;
+							form.render(); //更新全部
+						});
+
+					},
+					btn:["确认","取消"],
+					btn1:function () {
+						var path = $("#path").val();
+						var module = $("#module").val();
+
+
+						if (path == '' ){
+							layer.msg("路径名不能为空");
+							return;
+						}
+						if (module == '' ){
+							layer.msg("模块名不能为空");
+							return;
+						}
+
+						var obj = {path:path,module:module};
+
+						$.ajax({
+							headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+							url: webPath+"/module/insert",
+							type: "POST",
+							data:JSON.stringify(obj),
+							contentType: 'application/json;charset=utf-8',
+							success: function(data) {
+								if (data.errorCode == "0") {
+									layer.closeAll();
+									layer.msg("增加成功");
+									setTimeout(function () {
+										initData();
+									},300)
+
+								}else layer.msg("增加失败 :  "+JSON.stringify(data.errorMsg))
+
+							},
+							error: function(xhr, type, errorThrown) {
+								layer.msg("失败  "+xhr.responseJSON  );
+							}
+						})//ajax
+
+					},
+				});
+
+
+			}
+
+			function edit(elem) {
+				var layContent = '<form class="layui-form"style="margin: 10px"> ' +
+
+						'<div class="layui-form-item">' +
+						'<label class="layui-form-label"  >模块名</label>' +
+						'<div class="layui-input-block">' +
+						'<input type="text" id="module-upd" name="module" lay-verify="required" lay-reqtext="模块名不能为空"   class="layui-input">' +
+						'</div></div>' +
+
+						'<div class="layui-form-item" style="margin-top: 10px">' +
+						'<label class="layui-form-label"> 路径</label>' +
+						'<div class="layui-input-block">' +
+						'<input type="text" id="path-upd"name="path" lay-verify="required" lay-reqtext="路径不能为空"   class="layui-input">' +
+						'</div>' +
+						'</div>' +
+
+						'</form> ';
+
+				layer.open({
+					type: 1,
+					title: "修改", //不显示标题
+					area: ['520px', '480px'],
+					scrollbar: false,
+					content: layContent,
+					cancel: function() {},
+					success:function () {
+						layui.use('form', function(){
+							var form = layui.form;
+							$("#path-upd").val(elem.path);
+							$("#module-upd").val(elem.module);
+							form.render(); //更新全部
+						});
+
+					},
+					btn:["确认","取消"],
+					btn1:function () {
+						var path = $("#path-upd").val();
+						var module = $("#module-upd").val();
+
+						if (path == '' ){
+							layer.msg("路径名不能为空");
+							return;
+						}
+						if (module == '' ){
+							layer.msg("模块名不能为空");
+							return;
+						}
+
+						var obj = {id:elem.id,path:path,module:module};
+
+						$.ajax({
+							headers:{id:cid,opter:acc,Authorization:$.cookie("token")},
+							url: webPath+"/module/update",
+							type: "POST",
+							data:JSON.stringify(obj),
+							contentType: 'application/json;charset=utf-8',
+							success: function(data) {
+								if (data.errorCode == "0") {
+									layer.closeAll();
+									layer.msg("修改成功");
+									setTimeout(function () {
+										initData();
+									},300)
+
+								}else layer.msg("修改失败  "+JSON.stringify(data))
+
+							},
+							error: function(xhr, type, errorThrown) {
+								layer.msg("失败  "+xhr.responseJSON + "  "+errorThrown)
+							}
+						})//ajax
+
+					},
+				});
+
+
+			}
+
+
+
+
+			});
+
+		</script>
+	</body>
+
+</html>
