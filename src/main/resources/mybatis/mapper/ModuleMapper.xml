@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.ModuleMapper" >
+  <resultMap id="BaseResultMap" type="com.entity.Module" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="module" property="module" jdbcType="VARCHAR" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, module, path
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from module
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insert" parameterType="com.entity.Module" >
+    insert into module (id, module, path
+      )
+    values (#{id,jdbcType=VARCHAR}, #{module,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.entity.Module" >
+    insert into module
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="module != null" >
+        module,
+      </if>
+      <if test="path != null" >
+        path,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="module != null" >
+        #{module,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null" >
+        #{path,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Module" >
+    update module
+    <set >
+      <if test="module != null" >
+        module = #{module,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null" >
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.entity.Module" >
+    update module
+    set module = #{module,jdbcType=VARCHAR},
+      path = #{path,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from module
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+  <delete id="deleteBatch" parameterType="java.lang.String" >
+    delete from module
+    where ID in
+    <foreach index="index" item="item" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+
+  </delete>
+
+  <select id="getListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    *
+    from module
+    <where>
+      <if test="module != null and module != '' ">
+        module  like CONCAT(#{module,jdbcType=VARCHAR},'%')
+      </if>
+
+    </where>
+    <if test="startIndex != null and pageSize != null">
+      limit #{startIndex}, #{pageSize}
+    </if>
+  </select>
+
+  <select id="getCountByMap" resultType="java.lang.Long" parameterType="java.util.Map" >
+    select count(*) from module
+    <where>
+      <if test="module != null and module != '' ">
+        module  like CONCAT(#{module,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </select>
+
+
+</mapper>

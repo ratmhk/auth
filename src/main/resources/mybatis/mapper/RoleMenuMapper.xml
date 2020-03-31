@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.RoleMenuMapper" >
+  <resultMap id="BaseResultMap" type="com.entity.RoleMenu" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    <result column="menu_id" property="menuId" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, role_id, menu_id, create_user, update_user, update_date, create_date
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from role_menu
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insert" parameterType="com.entity.RoleMenu" >
+    insert into role_menu (id, role_id, menu_id,
+      create_user, update_user, update_date,
+      create_date)
+    values (#{id,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{menuId,jdbcType=INTEGER},
+      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.entity.RoleMenu" >
+    insert into role_menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="menuId != null" >
+        menu_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuId != null" >
+        #{menuId,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.RoleMenu" >
+    update role_menu
+    <set >
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="menuId != null" >
+        menu_id = #{menuId,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.entity.RoleMenu" >
+    update role_menu
+    set role_id = #{roleId,jdbcType=VARCHAR},
+      menu_id = #{menuId,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from role_menu
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+  <delete id="deleteBatch" parameterType="java.lang.String" >
+    delete from role_menu
+    where ID in
+    <foreach index="index" item="item" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+
+  </delete>
+
+  <select id="getListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    *
+    from role_menu
+    <where>
+      <if test="menuId != null  and menuId != ''" >
+        menuId = #{menuId,jdbcType=INTEGER}
+      </if>
+
+    </where>
+    order by create_date desc
+    <if test="startIndex != null and pageSize != null">
+      limit #{startIndex}, #{pageSize}
+    </if>
+  </select>
+
+  <select id="getCountByMap" resultType="java.lang.Long" parameterType="java.util.Map" >
+    select count(*) from role_menu
+    <where>
+      <if test="menuId != null  and menuId != ''" >
+        menuId = #{menuId,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insertBatch" parameterType="com.entity.RoleMenu">
+    insert into role_menu (id, role_id, menu_id,
+    create_user, update_user, update_date,
+    create_date) values
+    <foreach collection="list" item="item"   separator="," >
+      (#{item.id,jdbcType=VARCHAR}, #{item.roleId,jdbcType=VARCHAR}, #{item.menuId,jdbcType=INTEGER},
+      #{item.createUser,jdbcType=VARCHAR}, #{item.updateUser,jdbcType=VARCHAR}, #{item.updateDate,jdbcType=TIMESTAMP},
+      #{item.createDate,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+
+  <delete id="deleteByRole" parameterType="java.lang.String" >
+    delete from role_menu
+    where role_id = #{roleId,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="selectByRole" parameterType="java.lang.String"  resultMap="BaseResultMap">
+    select * from role_menu where role_id = #{roleId,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

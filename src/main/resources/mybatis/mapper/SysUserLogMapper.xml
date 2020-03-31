@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.SysUserLogMapper" >
+
+  <resultMap id="BaseResultMap" type="com.entity.SysUserLog" >
+    <id column="log_id" property="logId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="module_name" property="moduleName" jdbcType="VARCHAR" />
+    <result column="operate" property="operate" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="class_name" property="className" jdbcType="VARCHAR" />
+    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
+    <result column="params" property="params" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    log_id, user_id, module_name, operate, time, class_name, method_name, params, ip
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user_log
+    where log_id = #{logId,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.entity.SysUserLog" >
+    insert into sys_user_log (log_id, user_id, module_name, 
+      operate, time, class_name, 
+      method_name, params, ip
+      )
+    values (#{logId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, 
+      #{operate,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP}, #{className,jdbcType=VARCHAR}, 
+      #{methodName,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.entity.SysUserLog" >
+    insert into sys_user_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="logId != null" >
+        log_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="moduleName != null" >
+        module_name,
+      </if>
+      <if test="operate != null" >
+        operate,
+      </if>
+      <if test="time != null" >
+        time,
+      </if>
+      <if test="className != null" >
+        class_name,
+      </if>
+      <if test="methodName != null" >
+        method_name,
+      </if>
+      <if test="params != null" >
+        params,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="logId != null" >
+        #{logId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="operate != null" >
+        #{operate,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="className != null" >
+        #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null" >
+        #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null" >
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.SysUserLog" >
+    update sys_user_log
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        module_name = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="operate != null" >
+        operate = #{operate,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="className != null" >
+        class_name = #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="methodName != null" >
+        method_name = #{methodName,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null" >
+        params = #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where log_id = #{logId,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.entity.SysUserLog" >
+    update sys_user_log
+    set user_id = #{userId,jdbcType=VARCHAR},
+      module_name = #{moduleName,jdbcType=VARCHAR},
+      operate = #{operate,jdbcType=VARCHAR},
+      time = #{time,jdbcType=TIMESTAMP},
+      class_name = #{className,jdbcType=VARCHAR},
+      method_name = #{methodName,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR}
+    where log_id = #{logId,jdbcType=INTEGER}
+  </update>
+
+<!--  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from sys_user_log
+        where log_id = #{logId,jdbcType=INTEGER}
+    </delete>-->
+
+
+
+  <select id="getListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    *
+    from sys_user_log
+
+    <if test="startIndex != null and pageSize != null">
+      limit #{startIndex}, #{pageSize}
+    </if>
+  </select>
+
+  <select id="getCountByMap" resultType="java.lang.Long" parameterType="java.util.Map" >
+    select count(*) from sys_user_log
+
+  </select>
+
+</mapper>

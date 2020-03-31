@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.UserRoleMapper" >
+
+  <resultMap id="BaseResultMap" type="com.entity.UserRole" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, role_id, user_id, create_user, create_date, update_user, update_date
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from user_role
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insert" parameterType="com.entity.UserRole" >
+    insert into user_role (id, role_id, user_id, 
+      create_user, create_date, update_user, 
+      update_date)
+    values (#{id,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.entity.UserRole" >
+    insert into user_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.UserRole" >
+    update user_role
+    <set >
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.entity.UserRole" >
+    update user_role
+    set role_id = #{roleId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByUserId" parameterType="java.lang.String" >
+    delete from user_role
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="selectByUserId" resultMap="roleResultMap" parameterType="java.util.Map" >
+    select
+    A.role_id as id,
+    B.role_name as role_name
+    from user_role A inner join role B on A.role_id = B.id
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+  <resultMap id="roleResultMap" type="java.util.Map" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+  </resultMap>
+
+
+  <insert id="insertBatch" parameterType="com.entity.UserRole">
+    insert into user_role (id, role_id, user_id,
+    create_user, create_date,
+    update_date, update_user)
+    values
+    <foreach collection="list" item="item"   separator="," >
+      (#{item.id}, #{item.roleId}, #{item.userId},#{item.createUser},
+      #{item.createDate}, #{item.updateDate}, #{item.updateUser})
+    </foreach>
+  </insert>
+
+  <select id="getUserRole" resultType="java.util.Map" parameterType="java.lang.String" >
+    select
+    A.role_id as roleId,
+    A.user_id as userId,
+    B.level as level,
+    B.role_name as roleName
+    from user_role A inner join role B on A.role_id = B.id
+    where user_id = #{userId,jdbcType=VARCHAR} AND  B.status = '1'
+  </select>
+
+  <select id="getUserRoleByAcc" resultType="java.util.Map" parameterType="java.lang.String" >
+    select
+    A.role_id as roleId,
+    A.user_id as userId,
+    B.level as level,
+    B.role_name as roleName
+    from user_role A inner join role B on A.role_id = B.id inner join user C on A.user_id = C.id
+    where C.acc = #{acc,jdbcType=VARCHAR} AND  B.status = '1'
+  </select>
+
+</mapper>

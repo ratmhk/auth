@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.RolePermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.entity.RolePermission" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="VARCHAR" />
+    <result column="permision_id" property="permisionId" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, role_id, permision_id
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from role_permission
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.entity.RolePermission" >
+    insert into role_permission ( role_id, permision_id
+      )
+    values (  #{roleId,jdbcType=VARCHAR}, #{permisionId,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.entity.RolePermission" >
+    insert into role_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="permisionId != null" >
+        permision_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="permisionId != null" >
+        #{permisionId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <delete id="deleteByRole" parameterType="java.lang.String">
+    delete from role_permission where role_id = #{roleId,jdbcType=VARCHAR}
+
+  </delete>
+
+  <select id="getListByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select  * from role_permission where role_id = #{roleId,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insertBatch" parameterType="com.entity.RolePermission" >
+    insert into role_permission ( role_id, permision_id) values
+      <foreach collection="list" item="item" separator=",">
+     (#{item.roleId,jdbcType=VARCHAR}, #{item.permisionId,jdbcType=VARCHAR}
+      )
+      </foreach>
+  </insert>
+
+
+</mapper>

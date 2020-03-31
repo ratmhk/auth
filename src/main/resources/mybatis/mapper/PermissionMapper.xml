@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.PermissionMapper" >
+
+    <resultMap id="BaseResultMap" type="com.entity.Permission" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="permission_name" property="permissionName" jdbcType="VARCHAR" />
+        <result column="mark" property="mark" jdbcType="VARCHAR" />
+        <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, permission_name, mark,  create_user, create_date, update_user, update_date
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from permission
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from permission
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.entity.Permission" >
+        insert into permission (id, permission_name, mark, 
+            create_user, create_date,
+            update_user, update_date)
+        values (#{id,jdbcType=VARCHAR}, #{permissionName,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR}, 
+             #{createUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+            #{updateUser,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.entity.Permission" >
+        insert into permission
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="permissionName != null" >
+                permission_name,
+            </if>
+            <if test="mark != null" >
+                mark,
+            </if>
+            <if test="createUser != null" >
+                create_user,
+            </if>
+            <if test="createDate != null" >
+                create_date,
+            </if>
+            <if test="updateUser != null" >
+                update_user,
+            </if>
+            <if test="updateDate != null" >
+                update_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="permissionName != null" >
+                #{permissionName,jdbcType=VARCHAR},
+            </if>
+            <if test="mark != null" >
+                #{mark,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null" >
+                #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null" >
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.entity.Permission" >
+        update permission
+        <set >
+            <if test="permissionName != null" >
+                permission_name = #{permissionName,jdbcType=VARCHAR},
+            </if>
+            <if test="mark != null" >
+                mark = #{mark,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null" >
+                create_user = #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null" >
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.entity.Permission" >
+        update permission
+        set permission_name = #{permissionName,jdbcType=VARCHAR},
+            mark = #{mark,jdbcType=VARCHAR},
+            create_user = #{createUser,jdbcType=VARCHAR},
+            create_date = #{createDate,jdbcType=TIMESTAMP},
+            update_user = #{updateUser,jdbcType=VARCHAR},
+            update_date = #{updateDate,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+<!--
+
+    <select id="getListByMap" resultType="java.util.Map" parameterType="java.util.Map" >
+        select
+        A.id as id ,
+        A.mark as mark ,
+        A.role_id as roleId ,
+        A.permission_name as permissionName,
+        B.role_name as roleName
+        from permission A left join role B on A.role_id = B.id
+        <where>
+            <if test="roleId != null  and roleId != ''" >
+                role_id = #{roleId,jdbcType=VARCHAR}
+            </if>
+            <if test="permissionName != null  and permissionName != ''" >
+                AND   permission_name like CONCAT(#{permissionName,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by A.create_date desc
+        <if test="startIndex != null and pageSize != null">
+            limit #{startIndex}, #{pageSize}
+        </if>
+    </select>
+-->
+
+    <select id="getListByMap" resultType="java.util.Map" parameterType="java.util.Map" >
+        select
+        A.id as id ,
+        A.mark as mark ,
+        A.permission_name as permissionName
+        from permission A
+        <where>
+            <if test="permissionName != null  and permissionName != ''" >
+                AND   permission_name like CONCAT(#{permissionName,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by A.create_date desc
+        <if test="startIndex != null and pageSize != null">
+            limit #{startIndex}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getCountByMap" resultType="java.lang.Long" parameterType="java.util.Map" >
+        select count(*) from permission
+        <where>
+            <if test="permissionName != null  and permissionName != ''" >
+                AND   permission_name like CONCAT(#{permissionName,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteBatch" parameterType="java.lang.String" >
+        delete from permission
+        where ID in
+        <foreach index="index" item="item" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+
+
+</mapper>

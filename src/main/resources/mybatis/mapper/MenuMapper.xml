@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.MenuMapper" >
+
+  <resultMap id="BaseResultMap" type="com.entity.Menu" >
+    <id column="id" property="mid" jdbcType="INTEGER" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="menu_path" property="menuPath" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="show_index" property="showIndex" jdbcType="INTEGER" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, menu_name, menu_path, status, parent_id, show_index, create_user, create_date, 
+    update_user, update_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from menu
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.entity.Menu">
+    insert into menu ( menu_name, menu_path,
+      status, parent_id, show_index,icon,
+      create_user, create_date, update_user,
+      update_date)
+    values ( #{menuName,jdbcType=VARCHAR}, #{menuPath,jdbcType=VARCHAR},
+      #{status,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{showIndex,jdbcType=INTEGER},#{icon,jdbcType=VARCHAR},
+      #{createUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.entity.Menu" >
+    insert into menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+
+      <if test="menuName != null" >
+        menu_name,
+      </if>
+      <if test="menuPath != null" >
+        menu_path,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="showIndex != null" >
+        show_index,
+      </if>
+      <if test="createUser != null" >
+        create_user,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateUser != null" >
+        update_user,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+
+      <if test="menuName != null" >
+        #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="menuPath != null" >
+        #{menuPath,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="showIndex != null" >
+        #{showIndex,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null" >
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Menu" >
+    update menu
+    <set >
+      <if test="menuName != null" >
+        menu_name = #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="menuPath != null" >
+        menu_path = #{menuPath,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="showIndex != null" >
+        show_index = #{showIndex,jdbcType=INTEGER},
+      </if>
+      <if test="icon != null" >
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="createUser != null" >
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.entity.Menu" >
+    update menu
+    set menu_name = #{menuName,jdbcType=VARCHAR},
+      menu_path = #{menuPath,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      show_index = #{showIndex,jdbcType=INTEGER},
+      icon = #{icon,jdbcType=VARCHAR},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{mid,jdbcType=INTEGER}
+  </update>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from menu
+        where id = #{mid,jdbcType=INTEGER}
+    </delete>
+
+  <delete id="deleteBatch" parameterType="java.lang.String" >
+    delete from menu
+    where id in
+    <foreach index="index" item="item" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+
+  </delete>
+
+  <select id="getListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+   *
+    from menu A
+    <where>
+      <if test="menuName != null  and menuName != ''" >
+        menu_name = #{menuName,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by show_index
+    <if test="startIndex != null and pageSize != null">
+      limit #{startIndex}, #{pageSize}
+    </if>
+  </select>
+
+  <select id="getCountByMap" resultType="java.lang.Long" parameterType="java.util.Map" >
+    select count(*) from menu
+    <where>
+      <if test="menuName != null  and menuName != ''" >
+       AND menu_name = #{menuName,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+  <select id="getMenuTree" resultMap="treeMenuMap" parameterType="java.util.Map" >
+    select
+    A.id,A.menu_name,A.menu_path, A.status,A.parent_id,A.show_index,A.create_user,A.create_date,A.update_user,A.update_date,
+
+    B.id as sid,B.menu_name as smenu_name,B.menu_path as smenu_path, B.status as sstatus,B.parent_id as sparent_id,
+    B.show_index as sshow_index,B.create_user as screate_user,B.create_date as screate_date,B.update_user as supdate_user,
+    B.update_date as supdate_date
+    from menu A  left join menu B on B.PARENT_ID = A.ID
+
+    where A.PARENT_ID = '0'
+    order by A.show_index
+    <if test="startIndex != null and pageSize != null">
+      limit #{startIndex}, #{pageSize}
+    </if>
+  </select>
+
+
+  <select id="getIndexMenuByRole" resultMap="treeMenuMap"  parameterType="java.util.Map">
+    select A.id,
+    A.menu_name ,A.menu_path ,A.show_index,A.icon,
+    SON.*
+      from menu A ,
+    (SELECT distinct B.id AS sid,
+        B.menu_name as smenu_name,
+        B.menu_path as smenu_path,
+        B.parent_id as sparent_id,
+        B.show_index as sshow_index,
+        B.icon as sicon
+     FROM user_role C
+    left JOIN role_menu  D ON D.role_id = C.role_id
+    inner JOIN menu B on D.menu_id = B.id AND B.status = '1'
+    AND B.parent_id > 0 WHERE C.user_id = #{userId}) SON
+    where A.parent_id = '0' AND SON.sparent_id = A.id
+    order by A.show_index
+  </select>
+
+
+<!--  <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+  <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+  <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+
+  <result column="screate_user" property="createUser" jdbcType="VARCHAR" />
+      <result column="screate_date" property="createDate" jdbcType="TIMESTAMP" />
+      <result column="supdate_user" property="updateUser" jdbcType="VARCHAR" />
+      <result column="supdate_date" property="updateDate" jdbcType="TIMESTAMP" />
+  -->
+  <resultMap id="treeMenuMap" type="com.entity.MenuDto" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="menu_name" property="name" jdbcType="VARCHAR" />
+    <result column="menu_name" property="title" jdbcType="VARCHAR" />
+    <result column="menu_path" property="menuPath" jdbcType="VARCHAR" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="show_index" property="showIndex" jdbcType="INTEGER" />
+    <collection property="children" ofType="com.entity.MenuDto">
+      <id column="sid" property="id" jdbcType="INTEGER" />
+      <result column="smenu_name" property="name" jdbcType="VARCHAR" />
+      <result column="sicon" property="icon" jdbcType="VARCHAR" />
+      <result column="smenu_name" property="title" jdbcType="VARCHAR" />
+      <result column="smenu_path" property="menuPath" jdbcType="VARCHAR" />
+      <result column="sstatus" property="status" jdbcType="VARCHAR" />
+      <result column="sparent_id" property="parentId" jdbcType="INTEGER" />
+      <result column="sshow_index" property="showIndex" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+
+  <update id="updateStatus" parameterType="java.util.Map">
+     update menu set status = #{status,jdbcType=VARCHAR}
+    where id = #{menuId,jdbcType=INTEGER}
+  </update>
+
+  <select id="getRoleMenu" resultType="java.util.Map" parameterType="java.util.Map" >
+    select
+    A.menu_id as id,
+    B.menu_name as title,
+    B.parent_id as parentId
+    from role_menu A left join menu B on A.menu_id = B.id
+    where A.role_id = #{roleId}
+  </select>
+
+
+</mapper>

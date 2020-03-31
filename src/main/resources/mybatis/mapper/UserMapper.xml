@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mapper.UserMapper" >
+
+    <resultMap id="BaseResultMap" type="com.entity.User" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="acc" property="acc" jdbcType="VARCHAR" />
+        <result column="age" property="age" jdbcType="INTEGER" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+        <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="VARCHAR" />
+        <result column="img" property="img" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="school_id" property="schoolId" jdbcType="VARCHAR" />
+        <result column="acc_type" property="accType" jdbcType="VARCHAR" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <collection property="roles"  ofType="com.entity.Role" >
+            <id column="rid" property="id" jdbcType="VARCHAR" />
+            <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap2" type="com.entity.User" >
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="acc" property="acc" jdbcType="VARCHAR" />
+        <result column="age" property="age" jdbcType="INTEGER" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="idcard" property="idcard" jdbcType="VARCHAR" />
+        <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="VARCHAR" />
+        <result column="img" property="img" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="school_id" property="schoolId" jdbcType="VARCHAR" />
+        <result column="acc_type" property="accType" jdbcType="VARCHAR" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <collection property="roles"  ofType="com.entity.Role" >
+            <id column="rid" property="id" jdbcType="VARCHAR" />
+            <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+        </collection>
+    </resultMap>
+
+    <!--  <collection property="roles"  select="com.mapper.UserRoleMapper.selectByUserId" column="{userId=id}" ></collection>  -->
+    <sql id="Base_Column_List" >
+    id, acc, age, email, idcard, introduce, nickname, password, phone, sex, img, status,
+    school_id, acc_type, update_date, update_user, create_user, create_date
+  </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from user
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insert" parameterType="com.entity.User" >
+    insert into user (id, acc, age,
+      email, idcard, introduce,
+      nickname, password, phone,
+      sex, img, status, school_id,
+      acc_type, update_date, update_user,
+      create_user, create_date)
+    values (#{id,jdbcType=VARCHAR}, #{acc,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER},
+      #{email,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{introduce,jdbcType=VARCHAR},
+      #{nickname,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+      #{sex,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{schoolId,jdbcType=VARCHAR},
+      #{accType,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR},
+      #{createUser,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.entity.User" >
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="acc != null" >
+                acc,
+            </if>
+            <if test="age != null" >
+                age,
+            </if>
+            <if test="email != null" >
+                email,
+            </if>
+            <if test="idcard != null" >
+                idcard,
+            </if>
+            <if test="introduce != null" >
+                introduce,
+            </if>
+            <if test="nickname != null" >
+                nickname,
+            </if>
+            <if test="password != null" >
+                password,
+            </if>
+            <if test="phone != null" >
+                phone,
+            </if>
+            <if test="sex != null" >
+                sex,
+            </if>
+            <if test="img != null" >
+                img,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+            <if test="schoolId != null" >
+                school_id,
+            </if>
+            <if test="accType != null" >
+                acc_type,
+            </if>
+            <if test="updateDate != null" >
+                update_date,
+            </if>
+            <if test="updateUser != null" >
+                update_user,
+            </if>
+            <if test="createUser != null" >
+                create_user,
+            </if>
+            <if test="createDate != null" >
+                create_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="acc != null" >
+                #{acc,jdbcType=VARCHAR},
+            </if>
+            <if test="age != null" >
+                #{age,jdbcType=INTEGER},
+            </if>
+            <if test="email != null" >
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="idcard != null" >
+                #{idcard,jdbcType=VARCHAR},
+            </if>
+            <if test="introduce != null" >
+                #{introduce,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null" >
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null" >
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="img != null" >
+                #{img,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="schoolId != null" >
+                #{schoolId,jdbcType=VARCHAR},
+            </if>
+            <if test="accType != null" >
+                #{accType,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null" >
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null" >
+                #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.entity.User" >
+        update user
+        <set >
+
+            <if test="age != null" >
+                age = #{age,jdbcType=INTEGER},
+            </if>
+            <if test="email != null" >
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="idcard != null" >
+                idcard = #{idcard,jdbcType=VARCHAR},
+            </if>
+            <if test="introduce != null" >
+                introduce = #{introduce,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null" >
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+
+            <if test="phone != null" >
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null" >
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+
+            <if test="status != null" >
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="schoolId != null" >
+                school_id = #{schoolId,jdbcType=VARCHAR},
+            </if>
+            <if test="accType != null" >
+                acc_type = #{accType,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null" >
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <!-- password = #{password,jdbcType=VARCHAR},school_id = #{schoolId,jdbcType=VARCHAR},
+
+    sex = #{sex,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+    -->
+    <update id="updateByPrimaryKey" parameterType="com.entity.User" >
+    update user
+    set
+      age = #{age,jdbcType=INTEGER},
+      email = #{email,jdbcType=VARCHAR},
+      idcard = #{idcard,jdbcType=VARCHAR},
+      introduce = #{introduce,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      acc_type = #{accType,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      update_user = #{updateUser,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+    <select id="selectByAcc" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from user
+        where acc = #{acc,jdbcType=VARCHAR}
+    </select>
+<!--
+
+    <select id="selectByAcc" resultMap="BaseResultMap" parameterType="java.lang.String" >
+         select
+        A.* ,
+        B.role_id as rid,
+        C.role_name
+        from user A
+        inner join user_role B on B.user_id  = A.id
+        inner join role C on C.id = B.role_id
+        where acc = #{acc,jdbcType=VARCHAR} AND C.status = '1'
+    </select>
+-->
+
+    <select id="getUserSchool" resultType="com.entity.School" parameterType="java.lang.String" >
+        select
+        B.id as id ,
+        B.school_name as schoolName
+        from user A inner join school B on A.school_id = B.id
+        where A.id = #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <!--
+    select
+        A.id, acc, age, email, idcard, introduce, nickname, password, phone, sex, img, A.status,
+        A.school_id as schoolId,
+        acc_type as accType,
+        update_date as updateDate,
+        update_user as updateUser,
+        create_user as createUser,
+        create_date as createDate,
+        B.school_name as schoolName
+        from user A inner join school B on A.school_id = B.id
+        where acc = #{acc,jdbcType=VARCHAR}
+    -->
+
+    <select id="getPwdByAcc" resultType="java.lang.String" parameterType="java.lang.String" >
+        select
+        password
+        from user
+        where acc = #{acc,jdbcType=VARCHAR}
+    </select>
+
+    <select id="checkAcc" resultType="java.lang.Integer" parameterType="java.lang.String" >
+        select
+        count(*)
+        from user
+        where acc = #{acc,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+        delete from user
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteBatch" parameterType="java.lang.String" >
+        delete from user
+        where id in
+        <foreach index="index" item="item" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </delete>
+
+    <update id="updateImg" parameterType="java.util.Map" >
+       update user
+        set
+      img = #{img,jdbcType=VARCHAR}
+    where id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <!--
+    select A.*,
+        B.role_id as rid,
+        C.role_name
+        from user A
+        left join user_role B on B.user_id  = A.id
+        left join role C on C.id = B.role_id and  C.status = '1'
+    -->
+
+    <select id="getListByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+       select A.*
+        from user A
+        <where>
+            <if test="nickname != null and nickname != ''" >
+                AND  nickname like "%"#{nickname}"%"
+            </if>
+             <if test="sex != null and sex != ''" >
+                AND  sex = #{sex,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by A.create_date desc
+        <if test="startIndex != null and pageSize != null">
+            limit #{startIndex}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getCountByMap" resultType="java.lang.Long" parameterType="java.util.Map" >
+        select
+       count(*)
+        from user
+        <where>
+            <if test="nickname != null and nickname != ''" >
+                AND  nickname like "%"#{nickname}"%"
+            </if>
+            <if test="sex != null and sex != ''" >
+                AND  sex = #{sex,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="getSchoolList" resultType="java.util.Map" parameterType="java.util.Map" >
+        select
+        id as id,
+        school_name as schoolName
+        from school
+    </select>
+
+    <update id="changeAccStatusBatch" parameterType="java.util.Map" >
+    update user
+     set    status =  #{status}
+    where id in
+    <foreach  item="item" collection="userIds" open="(" separator="," close=")">
+        #{item}
+    </foreach>
+    </update>
+
+    <select id="selectAdminAcc" resultType="java.util.Map" parameterType="java.lang.String" >
+       select
+        A.acc as acc ,
+        A.password ,
+        A.status ,
+        A.nickname ,
+        B.role_id as roleId ,
+        B.user_id as userId ,
+        C.role_name as roleName ,
+		C.level as minLevel
+        from user A
+        left join user_role B on B.user_id  = A.id
+        left join role C on C.id = B.role_id AND C.status = '1'
+		inner join
+		(select min(D.level) as minlevel  ,E.user_id   from role D inner join user_role E on D.id = E.role_id	group by E.user_id) as F
+		on F.minlevel = C.level and A.id = F.user_id
+        where A.acc = #{acc,jdbcType=VARCHAR}
+    </select>
+
+
+
+</mapper>
