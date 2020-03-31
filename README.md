@@ -1,5 +1,7 @@
 # 项目还在完善中！！
  项目框架使用 spring boot  mybatis  shiro  tk.mybatis mysql  layui 
+ 
+ src/main 是后台文件,css一直到per都是前端文件夹，放在一个地方就行，项目是前后端分离项目。
 
 
 # 一、环境 
