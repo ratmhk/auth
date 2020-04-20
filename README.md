@@ -14,10 +14,10 @@
 3.nginx 
      要配置好前端文件位置，还有后台接口的拦截
     例如  
-  ![1585628429229]( img/1585628429229.png)
+  ![1585628429229](https://github.com/ratmhk/auth/blob/master/img/1585628429229.png)
  
 
-  ![1585628463535]( img/1585628463535.png)
+  ![1585628463535](https://github.com/ratmhk/auth/blob/master/img/1585628463535.png)
 
        
        server {
@@ -54,7 +54,7 @@
 
 **1.菜单管理，配置左侧的菜单项**
 
-![*1585626909374*]( img/1585626909374.png)
+![*1585626909374*](https://github.com/ratmhk/auth/blob/master/img/1585626909374.png)
 
 
 
@@ -62,13 +62,13 @@
 
 **2.在角色管理 模块配置每个角色对应的菜单**
 
-![1585627050298]( img/1585627050298.png)
+![1585627050298](https://github.com/ratmhk/auth/blob/master/img/1585627050298.png)
 
 **3.分配菜单**
 
 
 
-![1585627085035]( img/1585627085035.png)
+![1585627085035](https://github.com/ratmhk/auth/blob/master/img/1585627085035.png)
 
 
 
@@ -76,15 +76,15 @@
 
 
 
-![]( img/1585627352177.png)
+![](https://github.com/ratmhk/auth/blob/master/img/1585627352177.png)
 
 **5.账号管理。给用户分配角色，那么用户就有了菜单和权限**
 
-![1585627416871]( img/1585627416871.png)
+![1585627416871](https://github.com/ratmhk/auth/blob/master/img/1585627416871.png)
 
 **6.分配用户的角色**
 
-![1585627750674]( img/1585627750674.png)
+![1585627750674](https://github.com/ratmhk/auth/blob/master/img/1585627750674.png)
 
 
 
@@ -94,11 +94,11 @@
 
 **1.例如 给onlyInsert分配菜单（如下菜单），分配权限（增加权限）**
 
-![1585628799264]( img/1585628799264.png)
+![1585628799264](https://github.com/ratmhk/auth/blob/master/img/1585628799264.png)
 
 **2.onlyInsert角色的账号登陆后菜单就如图所示。**
 
-![1585628999242]( img/1585628999242.png)
+![1585628999242](https://github.com/ratmhk/auth/blob/master/img/1585628999242.png)
 
 
 
@@ -106,7 +106,7 @@
 
 **3.没有权限的提示**
 
-![1585629789612]( img/1585629789612.png)
+![1585629789612](https://github.com/ratmhk/auth/blob/master/img/1585629789612.png)
 
 
 
